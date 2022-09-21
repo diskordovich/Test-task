@@ -1,6 +1,6 @@
 
-import { Component, OnInit } from '@angular/core';
-import { ExchangeRates, Rates } from './interface/exchangeRates';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ExchangeRates} from './interface/exchangeRates';
 import { RequestService } from './service/request.service';
 
 @Component({
@@ -9,15 +9,13 @@ import { RequestService } from './service/request.service';
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent implements OnInit{
-  constructor(private reqestServise:RequestService){
-    type RateArray={
-      rates:Array<ExchangeRates>
-    }
-  }
+export class AppComponent implements OnInit {
+  constructor(private reqestServise:RequestService){  }
+
 
   rateArray=new Array<ExchangeRates>()
-  
+  USDtoUAH:any = undefined;
+  EURtoUAH:any = undefined;
 
   USD:ExchangeRates = {
     base: "USD",
@@ -25,7 +23,7 @@ export class AppComponent implements OnInit{
     success:true
   }
   EUR:ExchangeRates = {
-    base: "USD",
+    base: "EUR",
     rates:{USD: 0.991901, EUR: 1, UAH: 36.79428},
     success:true
   }
@@ -36,31 +34,37 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.OnGetFakeRates()
+    this.OnGetRates()
+    this.OnGetHeaderRates()
     console.log(this.rateArray)
   }
+
+  
 
   OnGetRates():void{
     this.reqestServise.getRates("USD").subscribe({
       next:(result)=>{
-        this.rateArray.push(result)
+        this.rateArray = [...this.rateArray,result]
         console.log(this.rateArray)
+        this.OnGetHeaderRates()
       },
       error:(e)=>{console.log(e)}
     })
 
     this.reqestServise.getRates("EUR").subscribe({
       next:(result)=>{
-        this.rateArray.push(result)
+        this.rateArray = [...this.rateArray,result]
         console.log(this.rateArray)
+        this.OnGetHeaderRates()
       },
       error:(e)=>{console.log(e)}
     })
 
     this.reqestServise.getRates("UAH").subscribe({
       next:(result)=>{
-        this.rateArray.push(result)
+        this.rateArray = [...this.rateArray,result]
         console.log(this.rateArray)
+        this.OnGetHeaderRates()
       },
       error:(e)=>{console.log(e)}
     })
@@ -69,6 +73,12 @@ export class AppComponent implements OnInit{
   OnGetFakeRates():void{
     this.rateArray.push(this.USD, this.EUR, this.UAH)
   }
+
+  OnGetHeaderRates():void{
+    this.USDtoUAH=this.rateArray.find((obj)=>obj.base=="USD")?.rates.UAH
+    this.EURtoUAH=this.rateArray.find((obj)=>obj.base=="EUR")?.rates.UAH
+  }
+
   
 
 }

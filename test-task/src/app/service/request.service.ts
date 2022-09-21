@@ -14,7 +14,6 @@ export class RequestService {
 
   getRates(base:string):Observable<ExchangeRates>{
     const headers = new HttpHeaders({"apikey":"XQ8cPpdRLSvmJeMcIonXfgUVatqAXVna"})
-    //headers.append("apikey", "XQ8cPpdRLSvmJeMcIonXfgUVatqAXVna")
     const params = new HttpParams().set("base", base).set("symbols", "USD, EUR, UAH")
     return this.http.get<ExchangeRates>(this.URL, {
       headers:headers,
@@ -22,12 +21,4 @@ export class RequestService {
     })
   }
 
-  /*readonly URL ="https://jsonplaceholder.typicode.com/users/2"
-  getRates():Observable<User>{
-    const headers = new HttpHeaders()
-    headers.append("apikey", "XQ8cPpdRLSvmJeMcIonXfgUVatqAXVna")
-    return this.http.get<User>(this.URL, {
-      headers:headers
-    })
-  }*/
 }

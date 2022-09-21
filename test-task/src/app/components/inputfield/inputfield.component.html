@@ -1,0 +1,37 @@
+
+<mat-card class="inputCard">
+    <div class="inputForm">
+        <mat-form-field appearance="outline">
+            <mat-label>Amount</mat-label>
+            <input (ngModelChange)="OnFirstValChange($event)" [(ngModel)]="firstVal" name="val" matInput/>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Currency</mat-label>
+            <mat-select (selectionChange)="OnFirstCurrTypeChange($event)">
+                <mat-option *ngFor="let name of nameArray" value="{{name}}">
+                    {{name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        
+    </div>
+</mat-card>
+
+
+<mat-card class="inputCard">
+    <div class="inputForm">
+        <mat-form-field appearance="outline">
+            <mat-label>Amount</mat-label>
+            <input (ngModelChange)="OnSecondValChange($event)" [(ngModel)]="secondVal" name="val" matInput/>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Currency</mat-label>
+            <mat-select (selectionChange)="OnSecondCurrTypeChange($event)">
+                <mat-option *ngFor="let name of nameArray" value="{{name}}">
+                    {{name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field> 
+    </div>
+</mat-card>
+

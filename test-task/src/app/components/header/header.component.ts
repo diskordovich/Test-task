@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input} from '@angular/core';
 
 @Component({
   selector: 'app-header',
@@ -7,8 +7,10 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class HeaderComponent {
 
+  @Input() USDtoUAH:string
+  @Input() EURtoUAH:string
+
   constructor() { }
-  @Input() USDtoUAH:any
-  @Input() EURtoUAH:any
+
   
 }

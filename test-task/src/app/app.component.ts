@@ -10,13 +10,12 @@ import { RequestService } from './service/request.service';
 })
 
 export class AppComponent implements OnInit {
-  constructor(private reqestServise:RequestService){  }
-
 
   rateArray=new Array<ExchangeRates>()
-  USDtoUAH:any = undefined;
-  EURtoUAH:any = undefined;
+  USDtoUAH:string = ""
+  EURtoUAH:string = ""
 
+  //Used for testing without API access
   USD:ExchangeRates = {
     base: "USD",
     rates:{ USD: 1, EUR: 1.008165, UAH: 37.094705 },
@@ -33,52 +32,42 @@ export class AppComponent implements OnInit {
     success:true
   }
 
+  constructor(private reqestServise:RequestService){}
+
   ngOnInit(): void {
-    this.OnGetRates()
-    this.OnGetHeaderRates()
-    console.log(this.rateArray)
+    this.onGetRates()
   }
 
-  
+  appendToRateArray(result:any){
+    this.rateArray = [...this.rateArray,result]
+    this.onGetHeaderRates()
+  }
 
-  OnGetRates():void{
+  onGetRates():void{
     this.reqestServise.getRates("USD").subscribe({
-      next:(result)=>{
-        this.rateArray = [...this.rateArray,result]
-        console.log(this.rateArray)
-        this.OnGetHeaderRates()
-      },
-      error:(e)=>{console.log(e)}
+      next:this.appendToRateArray.bind(this),
+      error:(e:any)=>{console.log(e)}
     })
 
     this.reqestServise.getRates("EUR").subscribe({
-      next:(result)=>{
-        this.rateArray = [...this.rateArray,result]
-        console.log(this.rateArray)
-        this.OnGetHeaderRates()
-      },
-      error:(e)=>{console.log(e)}
+      next:this.appendToRateArray.bind(this),
+      error:(e:any)=>{console.log(e)}
     })
 
     this.reqestServise.getRates("UAH").subscribe({
-      next:(result)=>{
-        this.rateArray = [...this.rateArray,result]
-        console.log(this.rateArray)
-        this.OnGetHeaderRates()
-      },
-      error:(e)=>{console.log(e)}
+      next:this.appendToRateArray.bind(this),
+      error:(e:any)=>{console.log(e)}
     })
   }
 
-  OnGetFakeRates():void{
+  onGetFakeRates():void{
     this.rateArray.push(this.USD, this.EUR, this.UAH)
   }
 
-  OnGetHeaderRates():void{
-    this.USDtoUAH=this.rateArray.find((obj)=>obj.base=="USD")?.rates.UAH
-    this.EURtoUAH=this.rateArray.find((obj)=>obj.base=="EUR")?.rates.UAH
+  onGetHeaderRates():void{
+    let USDtoUAHRate = this.rateArray.find((obj)=>obj.base=="USD")?.rates.UAH
+    let EURtoUAHRate = this.rateArray.find((obj)=>obj.base=="EUR")?.rates.UAH
+    this.USDtoUAH=USDtoUAHRate? String(USDtoUAHRate) : ""
+    this.EURtoUAH=EURtoUAHRate? String(EURtoUAHRate) : ""
   }
-
-  
-
 }

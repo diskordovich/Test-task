@@ -3,11 +3,11 @@
     <div class="inputForm">
         <mat-form-field appearance="outline">
             <mat-label>Amount</mat-label>
-            <input (ngModelChange)="OnFirstValChange($event)" [(ngModel)]="firstVal" name="val" matInput/>
+            <input [formControl]="firstVal" name="val" matInput/>
         </mat-form-field>
         <mat-form-field appearance="outline">
             <mat-label>Currency</mat-label>
-            <mat-select (selectionChange)="OnFirstCurrTypeChange($event)">
+            <mat-select [formControl] = "firstCurr">
                 <mat-option *ngFor="let name of nameArray" value="{{name}}">
                     {{name}}
                 </mat-option>
@@ -22,11 +22,11 @@
     <div class="inputForm">
         <mat-form-field appearance="outline">
             <mat-label>Amount</mat-label>
-            <input (ngModelChange)="OnSecondValChange($event)" [(ngModel)]="secondVal" name="val" matInput/>
+            <input [formControl]="secondVal" name="val" matInput/>
         </mat-form-field>
         <mat-form-field appearance="outline">
             <mat-label>Currency</mat-label>
-            <mat-select (selectionChange)="OnSecondCurrTypeChange($event)">
+            <mat-select [formControl] = "secondCurr">
                 <mat-option *ngFor="let name of nameArray" value="{{name}}">
                     {{name}}
                 </mat-option>

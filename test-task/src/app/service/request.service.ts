@@ -7,9 +7,11 @@ import { ExchangeRates} from '../interface/exchangeRates';
   providedIn: 'root'
 })
 export class RequestService {
+  readonly URL = "https://api.apilayer.com/exchangerates_data/latest"
+
   constructor(private http:HttpClient) { }
 
-  readonly URL = "https://api.apilayer.com/exchangerates_data/latest"
+  
   
 
   getRates(base:string):Observable<ExchangeRates>{

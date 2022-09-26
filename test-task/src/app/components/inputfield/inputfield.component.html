@@ -1,13 +1,13 @@
 
 <mat-card class="inputCard">
-    <div class="inputForm">
+    <div [formGroup]="firstForm" class="inputForm">
         <mat-form-field appearance="outline">
             <mat-label>Amount</mat-label>
-            <input [formControl]="firstVal" name="val" matInput/>
+            <input formControlName="value" name="val" matInput/>
         </mat-form-field>
         <mat-form-field appearance="outline">
             <mat-label>Currency</mat-label>
-            <mat-select [formControl] = "firstCurr">
+            <mat-select formControlName = "currency">
                 <mat-option *ngFor="let name of nameArray" value="{{name}}">
                     {{name}}
                 </mat-option>
@@ -19,19 +19,19 @@
 
 
 <mat-card class="inputCard">
-    <div class="inputForm">
+    <div [formGroup]="secondForm" class="inputForm">
         <mat-form-field appearance="outline">
             <mat-label>Amount</mat-label>
-            <input [formControl]="secondVal" name="val" matInput/>
+            <input formControlName="value" name="val" matInput/>
         </mat-form-field>
         <mat-form-field appearance="outline">
             <mat-label>Currency</mat-label>
-            <mat-select [formControl] = "secondCurr">
+            <mat-select formControlName = "currency">
                 <mat-option *ngFor="let name of nameArray" value="{{name}}">
                     {{name}}
                 </mat-option>
             </mat-select>
-        </mat-form-field> 
+        </mat-form-field>
+        
     </div>
 </mat-card>
-

@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ExchangeRates } from 'src/app/interface/exchangeRates';
 
 @Component({
@@ -12,31 +12,29 @@ export class InputfieldComponent implements OnInit, OnChanges {
   @Input() rateArray:Array<ExchangeRates> = []
   nameArray:Array<string> = [""]
 
-  
-  firstVal = new FormControl(0)
-  secondVal = new FormControl(0)
-  firstCurr = new FormControl("")
-  secondCurr = new FormControl("")
-  
+  firstForm = new FormGroup({
+    value: new FormControl(0),
+    currency: new FormControl("")
+  })
+
+  secondForm = new FormGroup({
+    value: new FormControl(0),
+    currency: new FormControl("")
+  })
 
   constructor() { 
-    this.firstVal.valueChanges.subscribe(()=>{
-      this.calculateFromFirst.bind(this)()
+    this.firstForm.valueChanges.subscribe(()=>{
+      this.calculateFromFirst()
     })
-    this.secondVal.valueChanges.subscribe(()=>{
-      this.calculateFromSecond.bind(this)()
+    this.secondForm.get('value')?.valueChanges.subscribe(()=>{
+      this.calculateFromSecond()
     })
-    this.firstCurr.valueChanges.subscribe(()=>{
-      this.calculateFromFirst.bind(this)()
-    })
-    this.secondCurr.valueChanges.subscribe(()=>{
-      this.calculateFromFirst.bind(this)()
+    this.secondForm.get('currency')?.valueChanges.subscribe(()=>{
+      this.calculateFromFirst()
     })
   }
 
-  
-
-  ngOnChanges(changes: SimpleChanges): void {
+  refillRateArray():void{
     let tempArr:Array<string> = []
     this.rateArray.forEach(element => {
       tempArr.push(element.base)
@@ -44,12 +42,12 @@ export class InputfieldComponent implements OnInit, OnChanges {
     this.nameArray = tempArr 
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    this.refillRateArray()
+  }
+
   ngOnInit(): void {
-    let tempArr:Array<string> = []
-    this.rateArray.forEach(element => {
-      tempArr.push(element.base)
-    });
-    this.nameArray = tempArr
+    this.refillRateArray()
   }
 
   calculateConversionRate(fromCurr:string, toCurr:string):number{
@@ -69,16 +67,22 @@ export class InputfieldComponent implements OnInit, OnChanges {
   }
 
   calculateFromFirst(){
-    if(this.firstCurr.value!="" && this.secondCurr.value!=""){
-      let conversionRate = this.calculateConversionRate(this.secondCurr.value?this.secondCurr.value:"", this.firstCurr.value?this.firstCurr.value:"")
-      this.secondVal.patchValue(this.firstVal.value? this.firstVal.value / conversionRate : 0, {emitEvent:false});
+    let firstCurrName = this.firstForm.get('currency')?.value
+    let secondCurrName = this.secondForm.get('currency')?.value
+    if(firstCurrName!="" && secondCurrName!=""){
+      let conversionRate = this.calculateConversionRate(secondCurrName?secondCurrName:"", firstCurrName?firstCurrName:"")
+      let firstFormVal = this.firstForm.get('value')?.value;
+      this.secondForm.get('value')?.setValue(firstFormVal? firstFormVal / conversionRate : 0, {emitEvent:false});
     }
   }
 
   calculateFromSecond(){
-    if(this.firstCurr.value!="" && this.secondCurr.value!=""){
-      let conversionRate = this.calculateConversionRate(this.firstCurr.value?this.firstCurr.value:"",this.secondCurr.value?this.secondCurr.value:"")
-      this.firstVal.setValue(this.secondVal.value? this.secondVal.value / conversionRate : 0, {emitEvent:false});
+    let firstCurrName = this.firstForm.get('currency')?.value
+    let secondCurrName = this.secondForm.get('currency')?.value
+    if(firstCurrName!="" && secondCurrName!=""){
+      let conversionRate = this.calculateConversionRate(secondCurrName?secondCurrName:"", firstCurrName?firstCurrName:"")
+      let secondFormVal = this.secondForm.get('value')?.value;
+      this.firstForm.get('value')?.setValue(secondFormVal? secondFormVal / conversionRate : 0, {emitEvent:false});
     }
   }
 }

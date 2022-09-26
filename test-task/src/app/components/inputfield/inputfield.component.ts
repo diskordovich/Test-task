@@ -67,22 +67,16 @@ export class InputfieldComponent implements OnInit, OnChanges {
   }
 
   calculateFromFirst(){
-    let firstCurrName = this.firstForm.get('currency')?.value
-    let secondCurrName = this.secondForm.get('currency')?.value
-    if(firstCurrName!="" && secondCurrName!=""){
-      let conversionRate = this.calculateConversionRate(secondCurrName?secondCurrName:"", firstCurrName?firstCurrName:"")
-      let firstFormVal = this.firstForm.get('value')?.value;
-      this.secondForm.get('value')?.setValue(firstFormVal? firstFormVal / conversionRate : 0, {emitEvent:false});
+    if(this.firstForm.get('currency')?.value! !== "" && this.secondForm.get('currency')?.value !== ""){
+      let conversionRate = this.calculateConversionRate(this.firstForm.get('currency')?.value!, this.secondForm.get('currency')?.value!)
+      this.secondForm.get('value')?.setValue(this.firstForm.get('value')?.value!/conversionRate, {emitEvent:false})
     }
   }
 
   calculateFromSecond(){
-    let firstCurrName = this.firstForm.get('currency')?.value
-    let secondCurrName = this.secondForm.get('currency')?.value
-    if(firstCurrName!="" && secondCurrName!=""){
-      let conversionRate = this.calculateConversionRate(secondCurrName?secondCurrName:"", firstCurrName?firstCurrName:"")
-      let secondFormVal = this.secondForm.get('value')?.value;
-      this.firstForm.get('value')?.setValue(secondFormVal? secondFormVal / conversionRate : 0, {emitEvent:false});
+    if(this.firstForm.get('currency')?.value! !== "" && this.secondForm.get('currency')?.value !== ""){
+      let conversionRate = this.calculateConversionRate(this.secondForm.get('currency')?.value!, this.firstForm.get('currency')?.value!)
+      this.firstForm.get('value')?.setValue(this.secondForm.get('value')?.value!/conversionRate, {emitEvent:false})
     }
   }
 }

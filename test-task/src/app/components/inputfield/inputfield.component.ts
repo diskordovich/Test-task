@@ -1,38 +1,30 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ExchangeRates } from 'src/app/interface/exchangeRates';
+import { Subscription } from 'rxjs';
+import { ExchangeRates, Rates } from 'src/app/interface/exchangeRates';
 
 @Component({
   selector: 'app-inputfield',
   templateUrl: './inputfield.component.html',
   styleUrls: ['./inputfield.component.css'],
 })
-export class InputfieldComponent implements OnInit, OnChanges {
 
+export class InputfieldComponent implements OnInit, OnChanges, OnDestroy {
+  private subscriptions: Subscription[] = [];
   @Input() rateArray:Array<ExchangeRates> = []
   nameArray:Array<string> = [""]
 
-  firstForm = new FormGroup({
+  leftForm = new FormGroup({
     value: new FormControl(0),
     currency: new FormControl("")
   })
 
-  secondForm = new FormGroup({
+  rightForm = new FormGroup({
     value: new FormControl(0),
     currency: new FormControl("")
   })
 
-  constructor() { 
-    this.firstForm.valueChanges.subscribe(()=>{
-      this.calculateFromFirst()
-    })
-    this.secondForm.get('value')?.valueChanges.subscribe(()=>{
-      this.calculateFromSecond()
-    })
-    this.secondForm.get('currency')?.valueChanges.subscribe(()=>{
-      this.calculateFromFirst()
-    })
-  }
+  constructor() {}
 
   refillRateArray():void{
     let tempArr:Array<string> = []
@@ -48,35 +40,49 @@ export class InputfieldComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.refillRateArray()
+    this.subscriptions.push(
+      this.leftForm.valueChanges.subscribe(()=>{
+        this.calculateCurrExchange.bind(this)(this.leftForm, this.rightForm)
+      }),
+      this.rightForm.get('value')!.valueChanges.subscribe(()=>{
+        this.calculateCurrExchange.bind(this)(this.rightForm, this.leftForm)
+      }),
+      this.rightForm.get('currency')!.valueChanges.subscribe(()=>{
+        this.calculateCurrExchange.bind(this)(this.leftForm, this.rightForm)
+      })
+    )
   }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
+  }
+
 
   calculateConversionRate(fromCurr:string, toCurr:string):number{
-    let conversionRateList = this.rateArray.find((val)=>{return val.base===fromCurr})
-      switch(toCurr){
-        case("EUR"):{
-          return Number(conversionRateList?.rates.EUR)
-        }
-        case("USD"):{
-          return Number(conversionRateList?.rates.USD)
-        }
-        case("UAH"):{
-          return Number(conversionRateList?.rates.UAH)
-        }
-    }
-    return 0
+    let conversionRateList = this.rateArray.find((val)=>{return val.base===fromCurr})?.rates
+    return conversionRateList?conversionRateList[toCurr as keyof typeof conversionRateList]:0
   }
 
-  calculateFromFirst(){
-    if(this.firstForm.get('currency')?.value! !== "" && this.secondForm.get('currency')?.value !== ""){
-      let conversionRate = this.calculateConversionRate(this.firstForm.get('currency')?.value!, this.secondForm.get('currency')?.value!)
-      this.secondForm.get('value')?.setValue(this.firstForm.get('value')?.value!/conversionRate, {emitEvent:false})
+  calculateCurrExchange(firstForm:FormGroup, secondForm:FormGroup){
+    if(firstForm.get('currency')?.value! !== "" && secondForm.get('currency')?.value !== ""){
+      let conversionRate = this.calculateConversionRate(secondForm.get('currency')?.value!, firstForm.get('currency')?.value!)
+      secondForm.get('value')?.setValue(firstForm.get('value')?.value!/conversionRate, {emitEvent:false})
     }
   }
 
-  calculateFromSecond(){
-    if(this.firstForm.get('currency')?.value! !== "" && this.secondForm.get('currency')?.value !== ""){
-      let conversionRate = this.calculateConversionRate(this.secondForm.get('currency')?.value!, this.firstForm.get('currency')?.value!)
-      this.firstForm.get('value')?.setValue(this.secondForm.get('value')?.value!/conversionRate, {emitEvent:false})
+  // Alternatively, in one function:
+/*
+  But it makes code less readable, so I didn't do it
+
+  calculateCurrExchange(firstForm:FormGroup, secondForm:FormGroup){
+    if(firstForm.get('currency')?.value! !== "" && secondForm.get('currency')?.value !== ""){
+      let conversionRateList = this.rateArray.find((val)=>{return val.base===secondForm.get('currency')?.value!})?.rates
+      let conversionRate = conversionRateList?conversionRateList[firstForm.get('currency')?.value! as keyof typeof conversionRateList]:0
+      secondForm.get('value')?.setValue(firstForm.get('value')?.value!/conversionRate, {emitEvent:false})
     }
   }
+*/
+
+
+  
 }

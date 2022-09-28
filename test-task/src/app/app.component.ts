@@ -62,12 +62,11 @@ export class AppComponent implements OnInit {
 
   onGetFakeRates():void{
     this.rateArray.push(this.USD, this.EUR, this.UAH)
+    this.onGetHeaderRates()
   }
 
   onGetHeaderRates():void{
-    let USDtoUAHRate = this.rateArray.find((obj)=>obj.base=="USD")?.rates.UAH
-    let EURtoUAHRate = this.rateArray.find((obj)=>obj.base=="EUR")?.rates.UAH
-    this.USDtoUAH=USDtoUAHRate? String(USDtoUAHRate) : ""
-    this.EURtoUAH=EURtoUAHRate? String(EURtoUAHRate) : ""
+    this.USDtoUAH=String(this.rateArray.find((obj)=>obj.base=="USD")?.rates.UAH)
+    this.EURtoUAH=String(this.rateArray.find((obj)=>obj.base=="EUR")?.rates.UAH)
   }
 }
